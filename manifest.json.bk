@@ -1,0 +1,27 @@
+{
+    "name": "A browser action with a popup that changes the page color",
+    "description": "Change the current page color",
+    "version": "1.0",
+    "permissions": [
+        "cookies", "tabs", "http://*/*", "https://*/*"
+    ],
+
+    "browser_action": {
+        "default_title": "Set this page's color.",
+        "default_icon": "icon.png",
+        "default_popup": "popup.html"
+    },
+
+    "content_scripts": [
+        {
+            "matches": ["http://hrm.smartosc.com/*"],
+            "js": ["jquery-2.1.4.min.js", "inject.js"]
+        }
+    ],
+
+    "background": {
+        "scripts": ["background.js"]
+    },
+
+    "manifest_version": 2
+}
