@@ -21,14 +21,14 @@ var timesheet = Util = Timesheet = null;
         this.getDomain()
             .done(function(data) {
                 if(data.indexOf('<title>SmartHRM login</title>') > -1) {
-                    $('#content').html('<a target="_blank" href="' + this.domain + '">Click here</a> to login to HR first, then refresh this page.');
+                    $('#content').html('<h2><a target="_blank" href="' + this.domain + '">Click here</a> to login to HR first, then refresh this page.</h2>');
                 } else {
                     this.init();
                 }
             }.bind(this))
 
             .fail(function() {
-                alert('HRM system is down!');
+                $('#content').html('<h2>HR system is down! <a href="/manager.html">Click here</a> to retry.</h2>');
             })
     };
 
@@ -252,7 +252,7 @@ var timesheet = Util = Timesheet = null;
     };
 
     PunchTime.prototype.getDate = function() {
-        return this.timeIn.format('LL');
+        return this.timeIn.format('ddd, LL');
     };
 
     PunchTime.prototype.getPunchIn = function() {
