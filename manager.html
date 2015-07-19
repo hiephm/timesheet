@@ -1,11 +1,51 @@
 <html>
 <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <script src="lib/jquery-2.1.4.min.js"></script>
     <script src="lib/jquery.cookie.js"></script>
     <script src="lib/moment-with-locales.min.js"></script>
+    <script src="lib/mustache.min.js"></script>
     <script src="js/manager.js"></script>
+    <style>
+        td, th {border: 1px solid black; text-align: center}
+        th {font-weight: bold}
+        tr.forgot-punch td {color: red; font-weight: bold}
+    </style>
 </head>
-    <body>
-        <div id="content"></div>
-    </body>
+<body>
+    <script id="timesheet-template" type="text/x-mustache-template">
+        <div class="timesheet">
+            <h1>Timesheet report</h1>
+            <h3>Thời gian tính lương: {{totalSmartTime}}h / Giờ chuẩn {{requiredWorkTime}}h ({{note}}h)</h3>
+            <h3>Số lần quên punch: {{forgotPunchCount}}
+                {{#forgotPunchCount}}- Dự tính sau khi recover: {{totalAfterRecover}}h ({{noteAfterRecover}}h){{/forgotPunchCount}}</h3>
+            <h3>Thời gian cống hiến: {{totalStupidTime}}h</h3>
+            <table>
+                <tr>
+                    <th>STT</th>
+                    <th>Ngày</th>
+                    <th>Punch In</th>
+                    <th>Punch Out</th>
+                    <th>Thời gian tính lương</th>
+                    <th>Thời gian cống hiến</th>
+                </tr>
+                {{#punchtimes}}
+                <tr {{#forgotPunch}}class="forgot-punch"{{/forgotPunch}}>
+                    <td>{{count}}</td>
+                    <td>{{getDate}}</td>
+                    <td>{{{getPunchIn}}}</td>
+                    <td>{{{getPunchOut}}}</td>
+                    <td>{{getSmartTime}}</td>
+                    <td>{{getStupidTime}}</td>
+                </tr>
+                {{/punchtimes}}
+            </table>
+        </div>
+    </script>
+    <div id="content">
+        <div style="text-align: center">
+            <img src="images/ajax-loader.gif"/>
+        </div>
+    </div>
+</body>
 </html>
