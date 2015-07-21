@@ -176,7 +176,7 @@ var Navigation = Timesheet = null;
     Navigation = function() {
         this.renderNavigation();
         this.handleEvent();
-        this.renderTimesheet(moment());
+        $('#navigation .months-list li:first-child a').trigger('click');
     };
 
     Navigation.prototype.renderNavigation = function() {
@@ -197,6 +197,8 @@ var Navigation = Timesheet = null;
     Navigation.prototype.handleEvent = function() {
         var _this = this;
         $('#navigation .months-list a').click(function() {
+            $('#navigation .months-list a').removeClass('active');
+            $(this).addClass('active');
             _this.renderTimesheet(moment($(this).attr('data')));
         });
     };

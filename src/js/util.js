@@ -32,13 +32,19 @@ var Util = null;
         },
 
         getLast12Months: function() {
-            var now = moment();
+            var now = Util.getCurrentMonth();
             var list = [];
             for (var i = 0; i < 12; i++) {
                 list.push(moment(now).date(1).subtract(i, 'months'));
             }
 
             return list;
+        },
+
+        getCurrentMonth: function() {
+            var now = moment();
+            var cutOverDay = moment().date(20);
+            return now.isAfter(cutOverDay) ? now.add(1, 'months') : now;
         },
 
         showLoader: function() {
