@@ -68,6 +68,19 @@ var Util = null;
 
         showLoader: function() {
             $('#timesheet').html('<div style="text-align: center"><img src="images/ajax-loader.gif"/></div>');
+        },
+
+        getDiffNoteText: function(diff) {
+            if (diff < 0) {
+                return '<span style="color: red">Thiếu ' + Util.formatHours(-1 * diff) + '</span>';
+            } else {
+                return '<span style="color: green">Thừa ' + Util.formatHours(diff) + '</span>';
+            }
+
+        },
+
+        formatHours: function(hour) {
+            return hour.toFixed(2) + 'h';
         }
     };
 })(jQuery);

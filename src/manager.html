@@ -19,6 +19,7 @@
         td, th {border: 1px solid black; text-align: center; padding: 5px;}
         th {font-weight: bold}
         tr.forgot-punch td, tr.is-missing td {color: red; font-weight: bold}
+        tr.today td {color: darkgreen; font-weight: bold}
     </style>
 </head>
 <body>
@@ -33,10 +34,10 @@
 
     <script id="timesheet-template" type="text/x-mustache-template">
         <h2>Tháng {{currentMonth}}</h2>
-        <p>Tổng thời gian tính lương: <strong>{{totalSmartTime}}h / <span title="Thời gian nếu làm đủ 8h/ngày đến thời điểm hiện tại">{{requiredWorkTime}}h<sup>?</sup></span> ({{note}}h)</strong></p>
+        <p>Tổng thời gian tính lương: <strong>{{totalSmartTime}} / <span title="Thời gian nếu làm đủ 8h/ngày đến thời điểm hiện tại">{{requiredWorkTime}}<sup>?</sup></span> ({{{note}}})</strong></p>
         <p>Số lần quên punch: <strong>{{forgotPunchCount}}</strong>
-            {{#forgotPunchCount}}- Dự tính sau khi recover: <strong><span title="Với điều kiện recover tất cả các ngày quên punch đủ 8h/ngày">{{totalAfterRecover}}h<sup>?</sup></span> ({{noteAfterRecover}}h){{/forgotPunchCount}}</strong></p>
-        <p>Tổng thời gian cống hiến: <strong>{{totalStupidTime}}h</strong></p>
+            {{#forgotPunchCount}}- Dự tính sau khi recover: <strong><span title="Với điều kiện recover tất cả các ngày quên punch đủ 8h/ngày">{{totalAfterRecover}}<sup>?</sup></span> ({{{noteAfterRecover}}}){{/forgotPunchCount}}</strong></p>
+        <p>Tổng thời gian cống hiến: <strong>{{totalStupidTime}}</strong></p>
         <table>
             <tr>
                 <th>STT</th>
@@ -47,7 +48,7 @@
                 <th>Thời gian cống hiến</th>
             </tr>
             {{#punchtimes}}
-            <tr class="{{#forgotPunch}}forgot-punch{{/forgotPunch}} {{#isMissing}}is-missing{{/isMissing}}">
+            <tr class="{{#forgotPunch}}forgot-punch{{/forgotPunch}} {{#isMissing}}is-missing{{/isMissing}} {{#isToday}}today{{/isToday}}">
                 <td>{{count}}</td>
                 <td>{{getDate}}</td>
                 <td>{{{getPunchIn}}}</td>

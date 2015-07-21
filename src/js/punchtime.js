@@ -5,6 +5,7 @@ var PunchTime = null;
         this.forgotPunch = false;
         this.isMissing = (isMissing == undefined ? false : isMissing);
         this.forgotText = 'FORGOT';
+        this.remindText = 'REMEMBER TO PUNCH'
         if (timeIn == '') {
             timeIn = timeOut;
             this.forgotPunch = 'in';
@@ -19,11 +20,12 @@ var PunchTime = null;
         this.timeOut = moment(timeOut);
         this.smartTime = 0;
         this.stupidTime = 0;
+        this.isToday = moment().isSame(this.timeIn, 'day');
         this.calculateWorkTime();
     };
 
     PunchTime.prototype.calculateWorkTime = function() {
-        if (this.forgotPunch || this.isMissing) {
+        if (this.forgotPunch || this.isMissing || this.isToday) {
             return;
         }
 
@@ -60,11 +62,19 @@ var PunchTime = null;
     };
 
     PunchTime.prototype.getPunchIn = function() {
-        return (this.forgotPunch == 'in' || this.isMissing) ? this.forgotText : this.timeIn.format('LT');
+        if (this.forgotPunch == 'in' || this.isMissing) {
+            return this.isToday ? this.remindText : this.forgotText;
+        } else {
+            return this.timeIn.format('LT');
+        }
     };
 
     PunchTime.prototype.getPunchOut = function() {
-        return (this.forgotPunch == 'out' || this.isMissing) ? this.forgotText : this.timeOut.format('LT');
+        if (this.forgotPunch == 'out' || this.isMissing) {
+            return this.isToday ? this.remindText : this.forgotText;
+        } else {
+            return this.timeOut.format('LT');
+        }
     };
 
     PunchTime.prototype.getSmartTime = function() {

@@ -98,22 +98,22 @@ var Navigation = Timesheet = null;
         })
 
         var diff = totalSmartTime - requiredWorkTime;
-        var note = diff > 0 ? 'Thừa ' + diff.toFixed(2) : 'Thiếu ' + (-1 * diff).toFixed(2);
+        var note = Util.getDiffNoteText(diff);
 
         var totalAfterRecover = totalSmartTime + (8 * forgotPunchCount);
         var diff = totalAfterRecover - requiredWorkTime;
-        var noteAfterRecover = diff > 0 ? 'Thừa ' + diff.toFixed(2) : 'Thiếu ' + (-1 * diff).toFixed(2);
+        var noteAfterRecover = Util.getDiffNoteText(diff);
 
 
         var template = $('#timesheet-template').html();
         var data = {
             'currentMonth': this.currentMonth.format('MM/YYYY'),
-            'totalSmartTime': totalSmartTime.toFixed(2),
-            'totalStupidTime': totalStupidTime.toFixed(2),
-            'requiredWorkTime': requiredWorkTime,
+            'totalSmartTime': Util.formatHours(totalSmartTime),
+            'totalStupidTime': Util.formatHours(totalStupidTime),
+            'requiredWorkTime': Util.formatHours(requiredWorkTime),
             'note': note,
             'forgotPunchCount': forgotPunchCount,
-            'totalAfterRecover': totalAfterRecover.toFixed(2),
+            'totalAfterRecover': Util.formatHours(totalAfterRecover),
             'noteAfterRecover': noteAfterRecover,
             'punchtimes': punchTimes
         }
