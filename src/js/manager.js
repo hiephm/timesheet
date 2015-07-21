@@ -7,10 +7,10 @@ var Navigation = Timesheet = null;
     Timesheet = function(m) {
         this.currentMonth = m;
         this.startTime = Util.get21LastMonth(this.currentMonth);
-        this.endTime = Util.get21ThisMonth(this.currentMonth);
+        this.endTime = moment.min(Util.get21ThisMonth(this.currentMonth), moment());
         this.employeeId = null;
         this.domain = null;
-        this.times = [];
+        this.times = {};
 
         this.getDomain()
             .done(function(data) {
@@ -67,24 +67,34 @@ var Navigation = Timesheet = null;
     };
 
     Timesheet.prototype.displayTimesheet = function() {
-        this.times.sort(function(a, b) {
-            return a.isAfter(b) ? 1 : -1;
-        });
-
         var content = $('#timesheet');
         var totalSmartTime = 0;
         var totalStupidTime = 0;
         var requiredWorkTime = 0;
         var forgotPunchCount = 0;
         var count = 0;
-        $.each(this.times, function() {
-            this.count = ++count;
-            totalSmartTime += this.smartTime;
-            totalStupidTime += this.stupidTime;
-            requiredWorkTime += 8;
-            if (this.forgotPunch) {
+        var punchTime = null;
+        var punchTimes = [];
+        var listDays = Util.getListDays(this.startTime, this.endTime);
+        $.each(listDays, function(i, val) {
+            if (this.times[val] != undefined) {
+                punchTime = this.times[val];
+                totalSmartTime += punchTime.smartTime;
+                totalStupidTime += punchTime.stupidTime;
+                if (punchTime.forgotPunch) {
+                    forgotPunchCount++;
+                }
+            } else {
+                punchTime = new PunchTime(val, val, true);
                 forgotPunchCount++;
             }
+            requiredWorkTime += 8;
+            punchTime.count = ++count;
+            punchTimes.push(punchTime);
+        }.bind(this));
+
+
+        $.each(this.times, function() {
         })
 
         var diff = totalSmartTime - requiredWorkTime;
@@ -105,7 +115,7 @@ var Navigation = Timesheet = null;
             'forgotPunchCount': forgotPunchCount,
             'totalAfterRecover': totalAfterRecover.toFixed(2),
             'noteAfterRecover': noteAfterRecover,
-            'punchtimes': this.times
+            'punchtimes': punchTimes
         }
         var rendered = Mustache.render(template, data);
         content.html(rendered);
@@ -123,7 +133,7 @@ var Navigation = Timesheet = null;
             if (timeOut || timeIn) {
                 var punchTime = new PunchTime(timeIn, timeOut);
                 if (punchTime.timeIn.isBefore(_this.endTime) && !punchTime.timeIn.isBefore(_this.startTime)) {
-                    _this.times.push(punchTime);
+                    _this.times[punchTime.timeIn.format('YYYY-MM-DD')] = punchTime;
                 }
             }
         });

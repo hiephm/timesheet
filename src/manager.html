@@ -18,7 +18,7 @@
         table {border-collapse: collapse;}
         td, th {border: 1px solid black; text-align: center; padding: 5px;}
         th {font-weight: bold}
-        tr.forgot-punch td {color: red; font-weight: bold}
+        tr.forgot-punch td, tr.is-missing td {color: red; font-weight: bold}
     </style>
 </head>
 <body>
@@ -34,8 +34,8 @@
     <script id="timesheet-template" type="text/x-mustache-template">
         <h2>Tháng {{currentMonth}}</h2>
         <p>Tổng thời gian tính lương: <strong>{{totalSmartTime}}h / <span title="Thời gian nếu làm đủ 8h/ngày đến thời điểm hiện tại">{{requiredWorkTime}}h<sup>?</sup></span> ({{note}}h)</strong></p>
-        <p>Số lần quên punch: <strong>{{forgotPunchCount}}
-            {{#forgotPunchCount}}- Dự tính sau khi recover: {{totalAfterRecover}}h ({{noteAfterRecover}}h){{/forgotPunchCount}}</strong></p>
+        <p>Số lần quên punch: <strong>{{forgotPunchCount}}</strong>
+            {{#forgotPunchCount}}- Dự tính sau khi recover: <strong><span title="Với điều kiện recover tất cả các ngày quên punch đủ 8h/ngày">{{totalAfterRecover}}h<sup>?</sup></span> ({{noteAfterRecover}}h){{/forgotPunchCount}}</strong></p>
         <p>Tổng thời gian cống hiến: <strong>{{totalStupidTime}}h</strong></p>
         <table>
             <tr>
@@ -47,7 +47,7 @@
                 <th>Thời gian cống hiến</th>
             </tr>
             {{#punchtimes}}
-            <tr {{#forgotPunch}}class="forgot-punch"{{/forgotPunch}}>
+            <tr class="{{#forgotPunch}}forgot-punch{{/forgotPunch}} {{#isMissing}}is-missing{{/isMissing}}">
                 <td>{{count}}</td>
                 <td>{{getDate}}</td>
                 <td>{{{getPunchIn}}}</td>

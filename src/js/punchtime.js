@@ -1,8 +1,9 @@
 var PunchTime = null;
 
 (function($, undefined) {
-    PunchTime = function(timeIn, timeOut) {
+    PunchTime = function(timeIn, timeOut, isMissing) {
         this.forgotPunch = false;
+        this.isMissing = (isMissing == undefined ? false : isMissing);
         this.forgotText = 'FORGOT';
         if (timeIn == '') {
             timeIn = timeOut;
@@ -22,7 +23,7 @@ var PunchTime = null;
     };
 
     PunchTime.prototype.calculateWorkTime = function() {
-        if (this.forgotPunch) {
+        if (this.forgotPunch || this.isMissing) {
             return;
         }
 
@@ -59,11 +60,11 @@ var PunchTime = null;
     };
 
     PunchTime.prototype.getPunchIn = function() {
-        return this.forgotPunch == 'in' ? this.forgotText : this.timeIn.format('LT');
+        return (this.forgotPunch == 'in' || this.isMissing) ? this.forgotText : this.timeIn.format('LT');
     };
 
     PunchTime.prototype.getPunchOut = function() {
-        return this.forgotPunch == 'out' ? this.forgotText : this.timeOut.format('LT');
+        return (this.forgotPunch == 'out' || this.isMissing) ? this.forgotText : this.timeOut.format('LT');
     };
 
     PunchTime.prototype.getSmartTime = function() {

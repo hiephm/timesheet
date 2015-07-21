@@ -41,6 +41,25 @@ var Util = null;
             return list;
         },
 
+        isWeekend: function(m) {
+            return m.day() == 0 || m.day() == 6;
+        },
+
+        getListDays: function(startTime, endTime) {
+            var listDay = [];
+            startTime = moment(startTime);
+            while(startTime.isBefore(endTime, 'day')) {
+                if (Util.isWeekend(startTime)) {
+                    startTime.add(1, 'days');
+                    continue;
+                }
+                listDay.push(startTime.format('YYYY-MM-DD'));
+                startTime.add(1, 'days');
+            }
+
+            return listDay;
+        },
+
         getCurrentMonth: function() {
             var now = moment();
             var cutOverDay = moment().date(20);
