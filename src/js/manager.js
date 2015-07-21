@@ -1,19 +1,13 @@
 /**
  * Created by hiephm on 6/25/15.
  */
-var Timesheet = null;
+var Navigation = Timesheet = null;
 
 (function($, undefined) {
-    Timesheet = function(opts) {
-        opts = opts || {};
-
-        var defaultOpts = {
-            'month': new Date()
-        };
-        this.opts = $.extend(defaultOpts, opts);
-
-        moment.locale('en', {week: {dow: 1}}); // Set Monday as start of week
-
+    Timesheet = function(m) {
+        this.currentMonth = m;
+        this.startTime = Util.get21LastMonth(this.currentMonth);
+        this.endTime = Util.get21ThisMonth(this.currentMonth);
         this.employeeId = null;
         this.domain = null;
         this.times = [];
@@ -21,14 +15,14 @@ var Timesheet = null;
         this.getDomain()
             .done(function(data) {
                 if(data.indexOf('<title>SmartHRM login</title>') > -1) {
-                    $('#content').html('<h2><a target="_blank" href="' + this.domain + '">Click here</a> to login to HR first, then refresh this page.</h2>');
+                    $('#timesheet').html('<h2><a target="_blank" href="' + this.domain + '">Click here</a> to login to HR first, then refresh this page.</h2>');
                 } else {
                     this.init();
                 }
             }.bind(this))
 
             .fail(function() {
-                $('#content').html('<h2>HR system is down! <a href="/manager.html">Click here</a> to retry.</h2>');
+                $('#timesheet').html('<h2>HR system is down! <a href="/manager.html">Click here</a> to retry.</h2>');
             })
     };
 
@@ -59,10 +53,10 @@ var Timesheet = null;
 
     Timesheet.prototype.init = function() {
         var _this = this;
-        var startTime = Util.get21LastMonth(_this.opts.month);
         var chained = this.initPostData();
         var processes = [];
-        while (moment().isAfter(startTime)) {
+        var startTime = moment(this.startTime);
+        while (this.endTime.isAfter(startTime)) {
             processes.push(chained.then(this.getTimesheetId(startTime)).then(this.getTimesheetDetail.bind(this)).then( function (table) {
                 _this.parseTimesheetDetail(table);
             }));
@@ -77,7 +71,7 @@ var Timesheet = null;
             return a.isAfter(b) ? 1 : -1;
         });
 
-        var content = $('#content');
+        var content = $('#timesheet');
         var totalSmartTime = 0;
         var totalStupidTime = 0;
         var requiredWorkTime = 0;
@@ -103,6 +97,7 @@ var Timesheet = null;
 
         var template = $('#timesheet-template').html();
         var data = {
+            'currentMonth': this.currentMonth.format('MM/YYYY'),
             'totalSmartTime': totalSmartTime.toFixed(2),
             'totalStupidTime': totalStupidTime.toFixed(2),
             'requiredWorkTime': requiredWorkTime,
@@ -119,10 +114,18 @@ var Timesheet = null;
     Timesheet.prototype.parseTimesheetDetail = function(table) {
         var _this = this;
         table.find('tbody tr').each(function() {
-            var timeIn = $(this).find('td:nth-child(4)').html().trim();
-            var timeOut = $(this).find('td:nth-child(5)').html().trim();
-            var punchTime = new PunchTime(timeIn, timeOut);
-            _this.times.push(punchTime);
+            var timeIn = $(this).find('td:nth-child(4)');
+            timeIn = timeIn.length > 0 ? timeIn.html().trim() : '';
+
+            var timeOut = $(this).find('td:nth-child(5)');
+            timeOut = timeOut.length > 0 ? timeOut.html().trim() : '';
+
+            if (timeOut || timeIn) {
+                var punchTime = new PunchTime(timeIn, timeOut);
+                if (punchTime.timeIn.isBefore(_this.endTime) && !punchTime.timeIn.isBefore(_this.startTime)) {
+                    _this.times.push(punchTime);
+                }
+            }
         });
     };
 
@@ -169,8 +172,45 @@ var Timesheet = null;
             return html;
         });
     };
+
+    Navigation = function() {
+        this.renderNavigation();
+        this.handleEvent();
+        this.renderTimesheet(moment());
+    };
+
+    Navigation.prototype.renderNavigation = function() {
+        var monthList = Util.getLast12Months();
+        var months = [];
+        $.each(monthList, function() {
+            months.push({'monthLabel': this.format('MM/YYYY'), 'monthValue': this.format('YYYY-MM-DD')});
+        });
+
+        var template = $('#navigation-template').html();
+        var data = {
+            'months': months
+        };
+        var rendered = Mustache.render(template, data);
+        $('#navigation').html(rendered);
+    };
+
+    Navigation.prototype.handleEvent = function() {
+        var _this = this;
+        $('#navigation .months-list a').click(function() {
+            _this.renderTimesheet(moment($(this).attr('data')));
+        });
+    };
+
+    Navigation.prototype.renderTimesheet = function(m) {
+        Util.showLoader();
+        new Timesheet(m);
+    }
+
 })(jQuery);
 
 document.addEventListener('DOMContentLoaded', function() {
-    new Timesheet();
+    (function($, undefined) {
+        moment.locale('en', {week: {dow: 1}}); // Set Monday as start of week
+        new Navigation();
+    })(jQuery);
 });

@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
@@ -5,47 +6,60 @@
     <script src="lib/jquery.cookie.js"></script>
     <script src="lib/moment-with-locales.min.js"></script>
     <script src="lib/mustache.min.js"></script>
+    <script src="js/util.js"></script>
+    <script src="js/punchtime.js"></script>
     <script src="js/manager.js"></script>
     <style>
-        td, th {border: 1px solid black; text-align: center}
+        body {font-size: 14px;}
+        div.navigation {float: left; width: 250px;}
+        div.navigation ul li { list-style-type: none; padding: 5px 0;}
+        div.timesheet {float: left; width: 800px;}
+        table {border-collapse: collapse;}
+        td, th {border: 1px solid black; text-align: center; padding: 5px;}
         th {font-weight: bold}
         tr.forgot-punch td {color: red; font-weight: bold}
     </style>
 </head>
 <body>
+    <script id="navigation-template" type="text/x-mustache-template">
+        <h1>Timesheet report</h1>
+        <ul class="months-list">
+            {{#months}}
+            <li><a href="#" data="{{monthValue}}">Tháng {{monthLabel}}</a></li>
+            {{/months}}
+        </ul>
+    </script>
+
     <script id="timesheet-template" type="text/x-mustache-template">
-        <div class="timesheet">
-            <h1>Timesheet report</h1>
-            <h3>Tổng thời gian tính lương: {{totalSmartTime}}h / Giờ chuẩn {{requiredWorkTime}}h ({{note}}h)</h3>
-            <h3>Số lần quên punch: {{forgotPunchCount}}
-                {{#forgotPunchCount}}- Dự tính sau khi recover: {{totalAfterRecover}}h ({{noteAfterRecover}}h){{/forgotPunchCount}}</h3>
-            <h3>Tổng thời gian cống hiến: {{totalStupidTime}}h</h3>
-            <table>
-                <tr>
-                    <th>STT</th>
-                    <th>Ngày</th>
-                    <th>Punch In</th>
-                    <th>Punch Out</th>
-                    <th>Thời gian tính lương</th>
-                    <th>Thời gian cống hiến</th>
-                </tr>
-                {{#punchtimes}}
-                <tr {{#forgotPunch}}class="forgot-punch"{{/forgotPunch}}>
-                    <td>{{count}}</td>
-                    <td>{{getDate}}</td>
-                    <td>{{{getPunchIn}}}</td>
-                    <td>{{{getPunchOut}}}</td>
-                    <td>{{getSmartTime}}</td>
-                    <td>{{getStupidTime}}</td>
-                </tr>
-                {{/punchtimes}}
-            </table>
-        </div>
+        <h2>Tháng {{currentMonth}}</h2>
+        <p>Tổng thời gian tính lương: <strong>{{totalSmartTime}}h / <span title="Thời gian nếu làm đủ 8h/ngày đến thời điểm hiện tại">{{requiredWorkTime}}h<sup>?</sup></span> ({{note}}h)</strong></p>
+        <p>Số lần quên punch: <strong>{{forgotPunchCount}}
+            {{#forgotPunchCount}}- Dự tính sau khi recover: {{totalAfterRecover}}h ({{noteAfterRecover}}h){{/forgotPunchCount}}</strong></p>
+        <p>Tổng thời gian cống hiến: <strong>{{totalStupidTime}}h</strong></p>
+        <table>
+            <tr>
+                <th>STT</th>
+                <th>Ngày</th>
+                <th>Punch In</th>
+                <th>Punch Out</th>
+                <th>Thời gian tính lương</th>
+                <th>Thời gian cống hiến</th>
+            </tr>
+            {{#punchtimes}}
+            <tr {{#forgotPunch}}class="forgot-punch"{{/forgotPunch}}>
+                <td>{{count}}</td>
+                <td>{{getDate}}</td>
+                <td>{{{getPunchIn}}}</td>
+                <td>{{{getPunchOut}}}</td>
+                <td>{{getSmartTime}}</td>
+                <td>{{getStupidTime}}</td>
+            </tr>
+            {{/punchtimes}}
+        </table>
     </script>
     <div id="content">
-        <div style="text-align: center">
-            <img src="images/ajax-loader.gif"/>
-        </div>
+        <div class="navigation" id="navigation"></div>
+        <div class="timesheet" id="timesheet"></div>
     </div>
 </body>
 </html>
