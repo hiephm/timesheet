@@ -236,7 +236,7 @@ var timesheet = Util = Timesheet = null;
         if (stupidTime2 < 0) stupidTime2 = 0;
 
         var lunchBreak = moment(timeIn).hour(12).minute(0).second(0);
-        var lunchTime = workStart.isBefore(lunchBreak) ? 1.15 : (1.15 - workStart.diff(lunchBreak, 'hours', true));
+        var lunchTime = workStart.isBefore(lunchBreak) ? 1.25 : (1.25 - workStart.diff(lunchBreak, 'hours', true));
         if (lunchTime < 0) lunchTime = 0;
 
         this.smartTime = workEnd.diff(workStart, 'hours', true) - lunchTime;
