@@ -7,7 +7,7 @@ var Navigation = Timesheet = null;
     Timesheet = function(m) {
         this.currentMonth = m;
         this.startTime = Util.get21LastMonth(this.currentMonth);
-        this.endTime = moment.min(Util.get21ThisMonth(this.currentMonth), moment());
+        this.endTime = moment.min(Util.get21ThisMonth(this.currentMonth), moment().add(1, 'days'));
         this.employeeId = null;
         this.domain = null;
         this.times = {};
@@ -57,9 +57,14 @@ var Navigation = Timesheet = null;
         var processes = [];
         var startTime = moment(this.startTime);
         while (this.endTime.isAfter(startTime)) {
-            processes.push(chained.then(this.getTimesheetId(startTime)).then(this.getTimesheetDetail.bind(this)).then( function (table) {
-                _this.parseTimesheetDetail(table);
-            }));
+            processes.push(
+                chained
+                    .then(this.getTimesheetId(startTime))
+                    .then(this.getTimesheetDetail.bind(this))
+                    .then( function (table) {
+                        _this.parseTimesheetDetail(table);
+                    })
+            );
             startTime = Util.getNextMonday(startTime);
         }
 
@@ -81,21 +86,14 @@ var Navigation = Timesheet = null;
                 punchTime = this.times[val];
                 totalSmartTime += punchTime.smartTime;
                 totalStupidTime += punchTime.stupidTime;
-                if (punchTime.forgotPunch) {
-                    forgotPunchCount++;
-                }
             } else {
                 punchTime = new PunchTime(val, val, true);
-                forgotPunchCount++;
             }
-            requiredWorkTime += 8;
+            forgotPunchCount += punchTime.forgotPunchCount;
+            requiredWorkTime += punchTime.requiredWorkHours;
             punchTime.count = ++count;
             punchTimes.push(punchTime);
         }.bind(this));
-
-
-        $.each(this.times, function() {
-        })
 
         var diff = totalSmartTime - requiredWorkTime;
         var note = Util.getDiffNoteText(diff);

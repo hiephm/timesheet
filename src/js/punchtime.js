@@ -3,17 +3,25 @@ var PunchTime = null;
 (function($, undefined) {
     PunchTime = function(timeIn, timeOut, isMissing) {
         this.forgotPunch = false;
+        this.forgotPunchCount = 0;
+        this.requiredWorkHours = 8;
         this.isMissing = (isMissing == undefined ? false : isMissing);
         this.forgotText = 'FORGOT';
         this.remindText = 'REMEMBER TO PUNCH'
         if (timeIn == '') {
             timeIn = timeOut;
             this.forgotPunch = 'in';
+            this.forgotPunchCount = 1;
         }
 
         if (timeOut ==  '') {
             timeOut = timeIn;
             this.forgotPunch = 'out';
+            this.forgotPunchCount = 1;
+        }
+
+        if (this.isMissing) {
+            this.forgotPunchCount = 1;
         }
 
         this.timeIn = moment(timeIn);
@@ -21,11 +29,16 @@ var PunchTime = null;
         this.smartTime = 0;
         this.stupidTime = 0;
         this.isToday = moment().isSame(this.timeIn, 'day');
+        // Do not count work hour for today before punch out
+        if (this.isToday && (this.isMissing || this.forgotPunch)) {
+            this.requiredWorkHours = 0;
+            this.forgotPunchCount = 0;
+        }
         this.calculateWorkTime();
     };
 
     PunchTime.prototype.calculateWorkTime = function() {
-        if (this.forgotPunch || this.isMissing || this.isToday) {
+        if (this.forgotPunch || this.isMissing) {
             return;
         }
 
