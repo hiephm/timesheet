@@ -54,9 +54,24 @@ var PunchTime = null;
         var stupidTime2 = timeOut.diff(workEnd, 'hours', true);
         if (stupidTime2 < 0) stupidTime2 = 0;
 
-        var lunchBreak = moment(timeIn).hour(12).minute(0).second(0);
-        var lunchTime = workStart.isBefore(lunchBreak) ? 1.25 : (1.25 - workStart.diff(lunchBreak, 'hours', true));
-        if (lunchTime < 0) lunchTime = 0;
+        /**
+         * How lunch time is taken into account in calculation:
+         *
+         *                  | IN bef. 12h       | IN 12h - 1h15     |	IN aft. 1h15
+         * OUT bef. 12h	    | OUT - IN	        |       x	        |       x
+         * OUT 12h - 1h15	| OUT - IN - diff	|       x	        |       x
+         * OUT aft. 1h15	| OUT - IN - 1.25	| OUT - IN - diff	|   OUT - IN
+         *
+         */
+        var lunchStart = moment(timeIn).hour(12).minute(0).second(0);
+        var lunchEnd = moment(lunchStart).hour(13).minute(15).second(0);
+        var lunchTime = 0;
+
+        if (workStart.isBefore(lunchStart)) {
+            lunchTime = workEnd.isAfter(lunchEnd) ? 1.25 : (1.25 - lunchEnd.diff(workEnd, 'hours', true));
+        } else { // workStart is after lunchStart
+            lunchTime = workStart.isAfter(lunchEnd) ? 0 : (1.25 - lunchEnd.diff(workStart, 'hours', true));
+        }
 
         this.smartTime = workEnd.diff(workStart, 'hours', true) - lunchTime;
         this.stupidTime = stupidTime1 + stupidTime2;
