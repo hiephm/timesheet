@@ -44,7 +44,7 @@ var PunchTime = null;
 
         var timeIn = this.timeIn;
         var timeOut = this.timeOut;
-        var workStart = moment(timeIn).hour(7).minute(30).second(0);
+        var workStart = moment(timeIn).hour(7).minute(0).second(0);
         var stupidTime1 = workStart.diff(timeIn, 'hours', true);
         if (stupidTime1 < 0) stupidTime1 = 0;
         workStart = moment.max(workStart, timeIn); // worktime count from 7:30 AM
