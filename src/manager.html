@@ -48,7 +48,7 @@
         <h2>Tháng {{currentMonth}}</h2>
         <p>Tổng thời gian tính lương: <strong>{{totalSmartTime}} / <span title="Thời gian nếu làm đủ 8h/ngày đến thời điểm hiện tại">{{requiredWorkTime}}<sup>?</sup></span> ({{{note}}})</strong></p>
         <p>Số lần quên punch: <strong>{{forgotPunchCount}}</strong>
-            {{#forgotPunchCount}}- Dự tính sau khi recover: <strong><span title="Với điều kiện recover tất cả các ngày quên punch đủ 8h/ngày">{{totalAfterRecover}}<sup>?</sup></span> ({{{noteAfterRecover}}}){{/forgotPunchCount}}</strong></p>
+            {{#forgotPunchCount}}- Dự tính sau khi recover: <strong><span title="Với điều kiện recover (hoặc apply leave) đủ 8h/ngày cho tất cả các ngày quên punch (hoặc ngày nghỉ)">{{totalAfterRecover}}<sup>?</sup></span> ({{{noteAfterRecover}}}){{/forgotPunchCount}}</strong></p>
         <p>Tổng thời gian cống hiến: <strong>{{totalStupidTime}}</strong></p>
         <table>
             <tr>

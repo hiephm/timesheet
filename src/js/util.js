@@ -67,7 +67,7 @@ var Util = null;
         },
 
         showLoader: function() {
-            $('#timesheet').html('<div style="text-align: center"><img src="images/ajax-loader.gif"/></div>');
+            $('#timesheet').html('<div style="text-align: center; margin-top: 50px;"><img src="images/ajax-loader.gif"/></div>');
         },
 
         getDiffNoteText: function(diff) {
