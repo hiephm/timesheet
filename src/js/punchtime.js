@@ -6,8 +6,9 @@ var PunchTime = null;
         this.forgotPunchCount = 0;
         this.requiredWorkHours = 8;
         this.isMissing = (isMissing == undefined ? false : isMissing);
-        this.forgotText = 'FORGOT';
-        this.remindText = 'REMEMBER TO PUNCH'
+        this.forgotOrMissingText = 'QUÊN/NGHỈ';
+        this.forgotText = 'QUÊN ';
+        this.remindText = 'NHỚ ';
         if (timeIn == '') {
             timeIn = timeOut;
             this.forgotPunch = 'in';
@@ -86,12 +87,15 @@ var PunchTime = null;
     };
 
     PunchTime.prototype.getDate = function() {
-        return this.timeIn.format('ddd, LL');
+        var clone = moment(this.timeIn);
+        clone.locale('vi');
+        return clone.format('dddd, D/M');
     };
 
     PunchTime.prototype.getPunchIn = function() {
         if (this.forgotPunch == 'in' || this.isMissing) {
-            return this.isToday ? this.remindText : this.forgotText;
+            return this.isToday ? this.remindText + 'PUNCH IN'
+                : (this.isMissing ? this.forgotOrMissingText : this.forgotText + 'PUNCH IN');
         } else {
             return this.timeIn.format('LT');
         }
@@ -99,7 +103,8 @@ var PunchTime = null;
 
     PunchTime.prototype.getPunchOut = function() {
         if (this.forgotPunch == 'out' || this.isMissing) {
-            return this.isToday ? this.remindText : this.forgotText;
+            return this.isToday ? this.remindText + 'PUNCH OUT'
+                : (this.isMissing ? this.forgotOrMissingText : this.forgotText + 'PUNCH OUT');
         } else {
             return this.timeOut.format('LT');
         }
