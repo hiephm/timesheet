@@ -19,6 +19,7 @@
         td, th {border: 1px solid black; text-align: center; padding: 5px;}
         th {font-weight: bold}
         tr.forgot-punch td, tr.is-missing td {color: red; font-weight: bold}
+        tr.low-hours td {color: darkorange; font-weight: bold}
         tr.today td {color: darkgreen; font-weight: bold}
         div.disclaimer { font-size: 11px; width: 220px; margin-top: 50px;}
     </style>
@@ -60,12 +61,12 @@
                 <th>Thời gian cống hiến</th>
             </tr>
             {{#punchtimes}}
-            <tr class="{{#forgotPunch}}forgot-punch{{/forgotPunch}} {{#isMissing}}is-missing{{/isMissing}} {{#isToday}}today{{/isToday}}">
+            <tr class="{{#forgotPunch}}forgot-punch{{/forgotPunch}} {{#isMissing}}is-missing{{/isMissing}} {{#isToday}}today{{/isToday}} {{#lowHours}}low-hours{{/lowHours}}">
                 <td>{{count}}</td>
                 <td>{{getDate}}</td>
                 <td>{{{getPunchIn}}}</td>
                 <td>{{{getPunchOut}}}</td>
-                <td>{{getSmartTime}}</td>
+                <td>{{#lowHours}}<span title="Thiếu giờ nhiều">{{/lowHours}}{{getSmartTime}}{{#lowHours}}<sup>?</sup></span>{{/lowHours}}</td>
                 <td>{{getStupidTime}}</td>
             </tr>
             {{/punchtimes}}

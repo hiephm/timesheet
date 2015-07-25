@@ -3,6 +3,7 @@ var PunchTime = null;
 (function($, undefined) {
     PunchTime = function(timeIn, timeOut, isMissing) {
         this.forgotPunch = false;
+        this.lowHours = false;
         this.forgotPunchCount = 0;
         this.requiredWorkHours = 8;
         this.isMissing = (isMissing == undefined ? false : isMissing);
@@ -76,6 +77,7 @@ var PunchTime = null;
 
         this.smartTime = workEnd.diff(workStart, 'hours', true) - lunchTime;
         this.stupidTime = stupidTime1 + stupidTime2;
+        this.lowHours = this.smartTime < 5;
     };
 
     PunchTime.prototype.isAfter = function(another) {
