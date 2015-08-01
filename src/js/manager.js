@@ -82,17 +82,32 @@ var Navigation = Timesheet = null;
         var punchTimes = [];
         var listDays = Util.getListDays(this.startTime, this.endTime);
         $.each(listDays, function(i, val) {
+            var multiPunch  = false;
             if (this.times[val] != undefined) {
-                punchTime = this.times[val];
-                totalSmartTime += punchTime.smartTime;
-                totalStupidTime += punchTime.stupidTime;
+                if (this.times[val] instanceof Array) {
+                    multiPunch = true;
+                    $.each(this.times[val], function(i, val) {
+                        var punchTime = val;
+                        punchTime.count = ++count;
+                        totalSmartTime += punchTime.smartTime;
+                        totalStupidTime += punchTime.stupidTime;
+                        punchTimes.push(punchTime);
+                    });
+                } else {
+                    punchTime = this.times[val];
+                    totalSmartTime += punchTime.smartTime;
+                    totalStupidTime += punchTime.stupidTime;
+                }
             } else {
                 punchTime = new PunchTime(val, val, true);
             }
-            forgotPunchCount += punchTime.forgotPunchCount;
+
+            if (!multiPunch) {
+                forgotPunchCount += punchTime.forgotPunchCount;
+                punchTime.count = ++count;
+                punchTimes.push(punchTime);
+            }
             requiredWorkTime += punchTime.requiredWorkHours;
-            punchTime.count = ++count;
-            punchTimes.push(punchTime);
         }.bind(this));
 
         var diff = totalSmartTime - requiredWorkTime;
@@ -131,7 +146,17 @@ var Navigation = Timesheet = null;
             if (timeOut || timeIn) {
                 var punchTime = new PunchTime(timeIn, timeOut);
                 if (punchTime.timeIn.isBefore(_this.endTime) && !punchTime.timeIn.isBefore(_this.startTime)) {
-                    _this.times[punchTime.timeIn.format('YYYY-MM-DD')] = punchTime;
+                    var key = punchTime.timeIn.format('YYYY-MM-DD');
+                    if (_this.times[key] != undefined) {
+                        if (_this.times[key] instanceof Array) {
+                            _this.times[key].push(punchTime);
+                        } else {
+                            var punchTimes = [_this.times[key], punchTime];
+                            _this.times[key] = punchTimes;
+                        }
+                    } else {
+                        _this.times[key] = punchTime;
+                    }
                 }
             }
         });

@@ -49,12 +49,19 @@ var PunchTime = null;
         var workStart = moment(timeIn).hour(7).minute(0).second(0);
         var stupidTime1 = workStart.diff(timeIn, 'hours', true);
         if (stupidTime1 < 0) stupidTime1 = 0;
-        workStart = moment.max(workStart, timeIn); // worktime count from 7:30 AM
+        workStart = moment.max(workStart, timeIn); // worktime count from 7:00 AM
 
         var workEnd = moment(timeIn).hour(18).minutes(30).second(0);
         workEnd = moment.min(workEnd, timeOut); // worktime count to 6:30 PM
         var stupidTime2 = timeOut.diff(workEnd, 'hours', true);
         if (stupidTime2 < 0) stupidTime2 = 0;
+
+        if (timeIn.isAfter(workEnd) || timeOut.isBefore(workStart)) {
+            this.smartTime = 0;
+            this.stupidTime = timeOut.diff(timeIn, 'hours', true);
+            this.lowHours = true;
+            return;
+        }
 
         /**
          * How lunch time is taken into account in calculation:
