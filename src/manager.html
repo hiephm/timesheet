@@ -9,6 +9,7 @@
     <script src="js/util.js"></script>
     <script src="js/punchtime.js"></script>
     <script src="js/manager.js"></script>
+    <script src="js/cookie.js"></script>
     <style>
         body {font-size: 14px;}
         div.navigation {float: left; width: 250px;}
@@ -44,13 +45,13 @@
             </p>
         </div>
     </script>
-
     <script id="timesheet-template" type="text/x-mustache-template">
         <h2>Tháng {{currentMonth}}</h2>
         <p>Tổng thời gian tính lương: <strong>{{totalSmartTime}} / <span title="Thời gian nếu làm đủ 8h/ngày đến thời điểm hiện tại">{{requiredWorkTime}}<sup>?</sup></span> ({{{note}}})</strong></p>
         <p>Số lần quên punch: <strong>{{forgotPunchCount}}</strong>
             {{#forgotPunchCount}}- Dự tính sau khi recover: <strong><span title="Với điều kiện recover (hoặc apply leave) đủ 8h/ngày cho tất cả các ngày quên punch (hoặc ngày nghỉ)">{{totalAfterRecover}}<sup>?</sup></span> ({{{noteAfterRecover}}}){{/forgotPunchCount}}</strong></p>
         <p>Tổng thời gian cống hiến: <strong>{{totalStupidTime}}</strong></p>
+        <p><i>* Mark as full là chức năng mới, dùng cho những trường hợp đặc biệt (như buổi nghỉ pool party hôm trước). Khi một ngày được đánh dấu thì hệ thống sẽ coi như hôm đó bạn làm đủ 8h, tổng thời gian tính lương sẽ được cộng lại, mọi người sẽ tiện theo dõi hơn. Thông báo này sẽ được xoá trong lần cập nhật tới.</i></p>
         <table>
             <tr>
                 <th>STT</th>
@@ -59,6 +60,7 @@
                 <th>Punch Out</th>
                 <th>Thời gian tính lương</th>
                 <th>Thời gian cống hiến</th>
+                <th>Mark as full (8h)</th>
             </tr>
             {{#punchtimes}}
             <tr class="{{#forgotPunch}}forgot-punch{{/forgotPunch}} {{#isMissing}}is-missing{{/isMissing}} {{#isToday}}today{{/isToday}} {{#lowHours}}low-hours{{/lowHours}}">
@@ -68,6 +70,7 @@
                 <td>{{{getPunchOut}}}</td>
                 <td>{{#lowHours}}<span title="Thiếu giờ nhiều">{{/lowHours}}{{getSmartTime}}{{#lowHours}}<sup>?</sup></span>{{/lowHours}}</td>
                 <td>{{getStupidTime}}</td>
+                <td><input class='mark-as-full' data="{{getDateName}}" type='checkbox' {{getCheck}} /></td>
             </tr>
             {{/punchtimes}}
         </table>
