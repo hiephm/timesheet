@@ -83,6 +83,18 @@ var PunchTime = null;
         }
 
         this.smartTime = workEnd.diff(workStart, 'hours', true) - lunchTime;
+
+        var theDate = moment(this.timeIn).format('DDMMYYYY') + '=';
+        var cookies = document.cookie;
+        cookies = cookies.split('; ');
+
+        for (var i = 0; i < cookies.length; i++) {
+            if (theDate == cookies[i]) {
+                this.smartTime = 8;
+                break;
+            }
+        }
+
         this.stupidTime = stupidTime1 + stupidTime2;
         this.lowHours = this.smartTime < 5;
     };
@@ -126,5 +138,23 @@ var PunchTime = null;
     PunchTime.prototype.getStupidTime = function() {
         return this.stupidTime.toFixed(2);
     };
+
+    PunchTime.prototype.getCheck = function() {
+        var theDate = moment(this.timeIn).format('DDMMYYYY') + '=';
+        var cookies = document.cookie;
+        cookies = cookies.split('; ');
+
+        for (var i = 0; i < cookies.length; i++) {
+           if (theDate == cookies[i]) {
+                return 'checked';
+           }
+        }
+        return;
+    }
+
+    PunchTime.prototype.getDateName = function() {
+        var theDate = moment(this.timeIn).format('DDMMYYYY');
+        return theDate;
+    }
 
 })(jQuery);
